@@ -6,8 +6,9 @@
   "scripts": {
     "postinstall": "npm i -g bestzip",
     "zip": "npm prune && bestzip app-aws.zip app.js node_modules",
-    "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "deploy" : "aws lambda update-function-code --function-name chase-rewards-clicker --zip-file fileb://app-aws.zip",
+    "zip-deploy": "npm run zip && npm run deploy",
+    "start": "node index.js"
   },
   "author": "",
   "license": "ISC",

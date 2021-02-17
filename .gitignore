@@ -17,5 +17,5 @@ jspm_packages/
 .env
 .env.test
 
-# packages
+# zip files
 *.zip
