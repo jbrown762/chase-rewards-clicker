@@ -1,7 +1,5 @@
+require("dotenv").config();
 const chromium = require('chrome-aws-lambda');
-
-// public url; no need for env variable
-const url = "https://chaseoffers.chase.com/v1/index.html?ostb=8hEVNHmGEAuvqTiC_9fVUKgiVRinq3pfBK0qNl9riIM&activate=false&mi_u=273185532&mi_ostb_2=&mi_ostb_3=&mi_id_1=b15bf866d1f2376c51de0af256682c30cd607447ad581bdac56299a6823b8549&mi_id_2=&mi_id_3=";
 
 async function handler(event, context, callback) {
   let result = 'No result';
@@ -16,7 +14,7 @@ async function handler(event, context, callback) {
       ignoreHTTPSErrors: true,
     });
     const page = await browser.newPage();
-    await page.goto(url);
+    await page.goto(process.env.CHASE_URL);
     await page.waitForSelector(".plus-icon");
     const offersClicked = await page.evaluate(() => {
       const offerImgElements = [...document.getElementsByClassName("plus-icon")]
@@ -28,8 +26,9 @@ async function handler(event, context, callback) {
 
       return offerImgElements.map(img => img.getAttribute("alt"));
     });
-    const allOffersString = (offersClicked.length > 0) ? ` | ${offersClicked.join(" ,")}` : "";
+    const allOffersString = (offersClicked.length > 0) ? ` | ${offersClicked.join(", ")}` : "";
     result = `Offers clicked: ${offersClicked.length}${allOffersString}`;
+    console.info(result);
   } catch (error) {
     return callback(error);
   } finally {
