@@ -4,14 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "postinstall": "npm i -g bestzip",
+    "zip": "npm prune && bestzip app-aws.zip app.js node_modules",
     "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "chrome-aws-lambda": "^7.0.0",
-    "dotenv": "^8.2.0",
-    "puppeteer-core": "^7.0.4"
+    "chrome-aws-lambda": "7.0.0",
+    "dotenv": "8.2.0",
+    "puppeteer-core": "7.0.4"
   }
 }
