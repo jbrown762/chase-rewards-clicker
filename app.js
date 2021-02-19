@@ -1,8 +1,8 @@
 require("dotenv").config();
-const chromium = require('chrome-aws-lambda');
+const chromium = require("chrome-aws-lambda");
 
 async function handler(event, context, callback) {
-  let result = 'No result';
+  let result = "No result";
   let browser;
 
   try {
@@ -16,18 +16,18 @@ async function handler(event, context, callback) {
     const page = await browser.newPage();
     await page.goto(process.env.CHASE_URL);
     await page.waitForSelector(".plus-icon");
-    const offersClicked = await page.evaluate(() => {
-      const offerImgElements = [...document.getElementsByClassName("plus-icon")]
-        .filter(el => el.style.display !== "none")
-        .filter(el => el.parentElement.previousElementSibling?.tagName === "IMG")
-        .map(el => el.parentElement.previousElementSibling);
+    const offers = await page.evaluate(() => {
+      const plusIcons = [...document.getElementsByClassName("plus-icon")]
+        .filter(el => (el.style.display !== "none" && el.parentElement.style.display !== "none"));
+      const imgElements = plusIcons.map(el => el.parentElement.parentElement.querySelector("img"))
+        .filter(img => img);
 
-      offerImgElements.forEach(el => el.click());
+        plusIcons.forEach(el => el.click());
 
-      return offerImgElements.map(img => img.getAttribute("alt"));
+      return imgElements.map(img => img.getAttribute("alt"));
     });
-    const allOffersString = (offersClicked.length > 0) ? ` | ${offersClicked.join(", ")}` : "";
-    result = `Offers clicked: ${offersClicked.length}${allOffersString}`;
+    const allOffersString = (offers.length > 0) ? ` | ${offers.join(", ")}` : "";
+    result = `Offers clicked: ${offers.length}${allOffersString}`;
     console.info(result);
   } catch (error) {
     return callback(error);
