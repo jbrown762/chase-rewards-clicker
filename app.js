@@ -14,17 +14,23 @@ async function handler(event, context, callback) {
       ignoreHTTPSErrors: true,
     });
     const page = await browser.newPage();
-    await page.goto(process.env.CHASE_URL);
+    await page.goto(process.env.CHASE_URL, { waitUntil: 'networkidle2' });
     await page.waitForSelector(".plus-icon");
     const offers = await page.evaluate(() => {
-      const plusIcons = [...document.getElementsByClassName("plus-icon")]
+
+      const plusIcons = [...document.querySelector(".cdlx-offerCards").getElementsByClassName("plus-icon")]
         .filter(el => (el.style.display !== "none" && el.parentElement.style.display !== "none"));
-      const imgElements = plusIcons.map(el => el.parentElement.parentElement.querySelector("img"))
-        .filter(img => img);
 
-        plusIcons.forEach(el => el.click());
+      const offerCards = plusIcons
+        .map(el => el.closest(".cdlx-rs-offerCard"))
+        .filter(el => el);
 
-      return imgElements.map(img => img.getAttribute("alt"));
+      const offerNamesList = offerCards
+        .map(el => el.querySelector("img").getAttribute("alt"));
+
+      offerCards.forEach(el => el.click());
+
+      return offerNamesList;
     });
     const allOffersString = (offers.length > 0) ? ` | ${offers.join(", ")}` : "";
     result = `Offers clicked: ${offers.length}${allOffersString}`;
